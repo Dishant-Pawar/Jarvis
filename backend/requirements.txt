@@ -1,0 +1,14 @@
+fastapi==0.110.0
+uvicorn==0.28.0
+SpeechRecognition>=3.16.1
+pyttsx3==2.90
+pycaw==20240210
+screen-brightness-control==0.2.1
+pyautogui==0.9.54
+psutil==5.9.8
+pywin32==306
+pypdf==4.1.0
+requests==2.31.0
+schedule==1.2.1
+pyaudio
+

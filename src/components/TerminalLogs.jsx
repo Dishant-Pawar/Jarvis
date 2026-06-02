@@ -35,9 +35,17 @@ const DUMMY_LIVE_LOGS = [
   "[CORE] Main voltage level stabilized at 1.25V."
 ];
 
-export default function TerminalLogs({ isDiagnosticsRunning, onDiagnosticsComplete }) {
+export default function TerminalLogs({ isDiagnosticsRunning, onDiagnosticsComplete, newLogs = [] }) {
   const [logs, setLogs] = useState(INITIAL_LOGS);
   const terminalEndRef = useRef(null);
+
+  // Handle external logs injection from backend operations
+  useEffect(() => {
+    if (newLogs && newLogs.length > 0) {
+      const lastLog = newLogs[newLogs.length - 1];
+      setLogs((prev) => [...prev, lastLog]);
+    }
+  }, [newLogs]);
 
   // Auto-scroll logs
   useEffect(() => {

@@ -1,0 +1,19 @@
+{
+  "openrouter_api_key": "",
+  "grok_api_key": "",
+  "gemini_api_key": "",
+  "default_provider": "gemini",
+  "voice_settings": {
+    "rate": 180,
+    "volume": 1.0,
+    "voice_id": ""
+  },
+  "language_settings": {
+    "stt_lang": "en-US",
+    "tts_lang": "en"
+  },
+  "smtp_server": "smtp.gmail.com",
+  "smtp_port": 587,
+  "smtp_email": "",
+  "smtp_password": ""
+}

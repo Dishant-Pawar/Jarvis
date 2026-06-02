@@ -18,6 +18,12 @@ export default function App() {
   const [isCaptureFlash, setIsCaptureFlash] = useState(false);
   const [isCaptureModalOpen, setIsCaptureModalOpen] = useState(false);
   const [capturedTime, setCapturedTime] = useState("");
+  const [newLogs, setNewLogs] = useState([]);
+
+  const addTerminalLog = (logText) => {
+    const timestamp = new Date().toLocaleTimeString();
+    setNewLogs((prev) => [...prev, `[${timestamp}] ${logText}`]);
+  };
 
   // Settings Object
   const [settings, setSettings] = useState({
@@ -153,6 +159,7 @@ export default function App() {
           <TerminalLogs 
             isDiagnosticsRunning={isDiagnosticsRunning} 
             onDiagnosticsComplete={() => setIsDiagnosticsRunning(false)}
+            newLogs={newLogs}
           />
         )}
 
@@ -175,16 +182,51 @@ export default function App() {
           isSettingsOpen={isSettingsOpen}
           onToggleSettings={() => setIsSettingsOpen(!isSettingsOpen)}
           isListening={isListening}
-          onToggleListening={() => {
+          onToggleListening={async () => {
             if (isListening) {
               setIsListening(false);
-              setIsProcessing(true);
-              setTimeout(() => {
-                setIsProcessing(false);
-              }, 2500);
             } else {
               setIsListening(true);
               setIsProcessing(false);
+              addTerminalLog("Initializing mic stream...");
+              try {
+                // 1. Listen for voice command
+                const listenRes = await fetch("http://127.0.0.1:8000/api/voice/listen", { method: "POST" });
+                const listenData = await listenRes.json();
+                
+                if (listenData.success && listenData.data.text) {
+                  const queryText = listenData.data.text;
+                  addTerminalLog(`USER: "${queryText}"`);
+                  setIsListening(false);
+                  setIsProcessing(true);
+                  
+                  // 2. Execute command
+                  addTerminalLog(`ROUTING: "${queryText}"`);
+                  const commandRes = await fetch("http://127.0.0.1:8000/api/command", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ command: queryText })
+                  });
+                  const commandData = await commandRes.json();
+                  setIsProcessing(false);
+                  
+                  if (commandData.success) {
+                    addTerminalLog(`JARVIS: ${commandData.message}`);
+                    if (commandData.data.filepath) {
+                      addTerminalLog(`PATH: ${commandData.data.filepath}`);
+                    }
+                  } else {
+                    addTerminalLog(`ERROR: ${commandData.message}`);
+                  }
+                } else {
+                  addTerminalLog("AI_ENGINE: No speech recognized.");
+                  setIsListening(false);
+                }
+              } catch (err) {
+                addTerminalLog("NETWORK_ERROR: Connection to backend (port 8000) failed.");
+                console.error("Connection error:", err);
+                setIsListening(false);
+              }
             }
           }}
           isDiagnosticsRunning={isDiagnosticsRunning}

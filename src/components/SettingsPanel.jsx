@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function SettingsPanel({ 
   isOpen, 
@@ -6,10 +6,57 @@ export default function SettingsPanel({
   onToggleSetting, 
   onHueChange 
 }) {
+  const [geminiKey, setGeminiKey] = useState("");
+  const [openrouterKey, setOpenrouterKey] = useState("");
+  const [grokKey, setGrokKey] = useState("");
+  const [defaultProvider, setDefaultProvider] = useState("gemini");
+  const [saveStatus, setSaveStatus] = useState("");
+
+  useEffect(() => {
+    if (isOpen) {
+      fetch("http://127.0.0.1:8000/api/settings")
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.data) {
+            setGeminiKey(data.data.gemini_api_key || "");
+            setOpenrouterKey(data.data.openrouter_api_key || "");
+            setGrokKey(data.data.grok_api_key || "");
+            setDefaultProvider(data.data.default_provider || "gemini");
+          }
+        })
+        .catch(err => console.error("Error fetching settings:", err));
+    }
+  }, [isOpen]);
+
+  const handleSaveAPIKeys = async () => {
+    setSaveStatus("SAVING...");
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          gemini_api_key: geminiKey,
+          openrouter_api_key: openrouterKey,
+          grok_api_key: grokKey,
+          default_provider: defaultProvider
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSaveStatus("SAVED OK");
+      } else {
+        setSaveStatus("SAVE ERROR");
+      }
+    } catch (err) {
+      setSaveStatus("CONN ERROR");
+    }
+    setTimeout(() => setSaveStatus(""), 2000);
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] glass-panel rounded-xl p-6 z-50 pointer-events-auto select-none flex flex-col gap-5 border border-primary-container/30">
+    <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] max-h-[90vh] overflow-y-auto custom-scrollbar glass-panel rounded-xl p-6 z-50 pointer-events-auto select-none flex flex-col gap-5 border border-primary-container/30">
       
       {/* Panel Header */}
       <div className="flex justify-between items-center border-b border-primary-container/20 pb-3 font-mono text-[10px] tracking-wider text-primary-fixed-dim/90 font-bold">
@@ -128,6 +175,69 @@ export default function SettingsPanel({
             className="w-full h-1 bg-primary/20 rounded-lg appearance-none cursor-pointer accent-primary-container"
           />
           <span className="text-[7px] text-primary/30 font-mono self-end uppercase">DYNAMIC_FILTER_ROTATION</span>
+        </div>
+
+        {/* AI Engine API keys */}
+        <div className="flex flex-col gap-3 mt-2 pt-3 border-t border-primary-container/10">
+          <span className="text-[10px] font-mono font-bold tracking-widest text-primary-fixed-dim/90">AI CORE CONFIG</span>
+          
+          {/* Default AI Provider Select */}
+          <div className="flex flex-col gap-1">
+            <label className="text-[9px] font-mono text-primary/60 uppercase">Default Provider</label>
+            <select 
+              value={defaultProvider} 
+              onChange={(e) => setDefaultProvider(e.target.value)}
+              className="bg-black/60 border border-primary/20 hover:border-primary-container/50 text-[#dbfcff] rounded px-2 py-1 font-mono text-[10px] w-full focus:outline-none focus:border-primary-container"
+            >
+              <option value="gemini" className="bg-[#1a1a1a]">Gemini</option>
+              <option value="openrouter" className="bg-[#1a1a1a]">OpenRouter</option>
+              <option value="grok" className="bg-[#1a1a1a]">Grok</option>
+            </select>
+          </div>
+
+          {/* Gemini API Key */}
+          <div className="flex flex-col gap-1">
+            <label className="text-[9px] font-mono text-primary/60 uppercase">Gemini API Key</label>
+            <input 
+              type="password" 
+              value={geminiKey}
+              onChange={(e) => setGeminiKey(e.target.value)}
+              placeholder="Enter Gemini API Key..."
+              className="bg-black/60 border border-primary/20 text-[#dbfcff] rounded px-2 py-1 font-mono text-[10px] w-full focus:outline-none focus:border-primary-container"
+            />
+          </div>
+
+          {/* OpenRouter API Key */}
+          <div className="flex flex-col gap-1">
+            <label className="text-[9px] font-mono text-primary/60 uppercase">OpenRouter Key</label>
+            <input 
+              type="password" 
+              value={openrouterKey}
+              onChange={(e) => setOpenrouterKey(e.target.value)}
+              placeholder="Enter OpenRouter API Key..."
+              className="bg-black/60 border border-primary/20 text-[#dbfcff] rounded px-2 py-1 font-mono text-[10px] w-full focus:outline-none focus:border-primary-container"
+            />
+          </div>
+
+          {/* Grok API Key */}
+          <div className="flex flex-col gap-1">
+            <label className="text-[9px] font-mono text-primary/60 uppercase">Grok API Key</label>
+            <input 
+              type="password" 
+              value={grokKey}
+              onChange={(e) => setGrokKey(e.target.value)}
+              placeholder="Enter Grok API Key..."
+              className="bg-black/60 border border-primary/20 text-[#dbfcff] rounded px-2 py-1 font-mono text-[10px] w-full focus:outline-none focus:border-primary-container"
+            />
+          </div>
+
+          {/* Save Button */}
+          <button
+            onClick={handleSaveAPIKeys}
+            className="w-full py-1.5 mt-1 bg-primary-container/20 text-primary-container font-space text-[10px] font-bold border border-primary-container/30 rounded hover:bg-primary-container/30 hover:border-primary-container/50 transition-all cursor-pointer text-center active:scale-[0.98]"
+          >
+            {saveStatus || "SAVE CONFIGURATION"}
+          </button>
         </div>
 
       </div>
