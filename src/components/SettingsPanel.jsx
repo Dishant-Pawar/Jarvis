@@ -95,6 +95,24 @@ export default function SettingsPanel({
           </button>
         </div>
 
+        {/* Diagnostics Terminal Toggle */}
+        <div className="flex justify-between items-center">
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[11px] font-space font-semibold tracking-wide">Diagnostics Terminal</span>
+            <span className="text-[8px] text-primary/45 font-mono">SYS_DIAG_TERMINAL CONSOLE</span>
+          </div>
+          <button 
+            onClick={() => onToggleSetting("terminalLogs")}
+            className={`w-9 h-5 rounded-full p-0.5 transition-colors duration-300 ${
+              settings.terminalLogs ? "bg-primary-container" : "bg-primary/20"
+            }`}
+          >
+            <div className={`w-4 h-4 rounded-full bg-surface transition-transform duration-300 ${
+              settings.terminalLogs ? "translate-x-4" : "translate-x-0"
+            }`} />
+          </button>
+        </div>
+
         {/* Color Hue shift */}
         <div className="flex flex-col gap-2 mt-2 pt-2 border-t border-primary-container/10">
           <div className="flex justify-between items-center">

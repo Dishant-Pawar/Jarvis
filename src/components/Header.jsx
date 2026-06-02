@@ -137,28 +137,6 @@ export default function Header() {
 
       {/* Trailing Hardware Status Icons + Native Desktop Controls */}
       <div className="flex items-center gap-6 non-draggable">
-        {/* Notifications Icon (Clearable) */}
-        <div 
-          onClick={() => setNotificationCount(0)}
-          className="flex items-center gap-1.5 hover:text-primary-container transition-all cursor-pointer"
-          title={notificationCount > 0 ? `${notificationCount} Pending Notifications` : "No Notifications"}
-        >
-          <span className="material-symbols-outlined text-sm text-primary-container" style={{ fontVariationSettings: "'FILL' 1" }}>
-            {notificationCount > 0 ? "notifications_active" : "notifications"}
-          </span>
-          <span className="text-[9px]">{String(notificationCount).padStart(2, "0")}</span>
-        </div>
-        
-        {/* Network Quality Icon */}
-        <div 
-          className="flex items-center gap-1.5 hover:text-primary-container transition-all cursor-pointer"
-          title={`Network: ${isOnline ? "Connected" : "Disconnected"}`}
-        >
-          <span className="material-symbols-outlined text-sm text-primary-container" style={{ fontVariationSettings: "'FILL' 1" }}>
-            {isOnline ? "signal_cellular_alt" : "signal_cellular_nodata"}
-          </span>
-          <span className="text-[9px]">{networkQuality}</span>
-        </div>
 
         {/* Battery charging status icon */}
         <div 

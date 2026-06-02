@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import CustomCursor from "./components/CustomCursor";
 import Header from "./components/Header";
-import CenterReticle from "./components/CenterReticle";
+
 import PerformanceMonitor from "./components/PerformanceMonitor";
 import TerminalLogs from "./components/TerminalLogs";
 import SettingsPanel from "./components/SettingsPanel";
@@ -25,6 +25,7 @@ export default function App() {
     scanlines: false,
     ambientGrid: false,
     performanceMonitor: false,
+    terminalLogs: false,
     hue: 0,
   });
 
@@ -84,10 +85,6 @@ export default function App() {
 
       {/* HUD Outer Perimeter Border */}
       <div className="hud-perimeter">
-        <div className="corner-bracket corner-tl" />
-        <div className="corner-bracket corner-tr" />
-        <div className="corner-bracket corner-bl" />
-        <div className="corner-bracket corner-br" />
       </div>
 
       {/* Layout Content Frame */}
@@ -149,18 +146,15 @@ export default function App() {
           </div>
         </nav>
 
-        {/* Center reticle targeting display */}
-        <CenterReticle 
-          isListening={isListening} 
-          isProcessing={isProcessing}
-          isDiagnosticsRunning={isDiagnosticsRunning}
-        />
+
 
         {/* Left corner console log terminal */}
-        <TerminalLogs 
-          isDiagnosticsRunning={isDiagnosticsRunning} 
-          onDiagnosticsComplete={() => setIsDiagnosticsRunning(false)}
-        />
+        {settings.terminalLogs && (
+          <TerminalLogs 
+            isDiagnosticsRunning={isDiagnosticsRunning} 
+            onDiagnosticsComplete={() => setIsDiagnosticsRunning(false)}
+          />
+        )}
 
         {/* Right corner performance resource metrics panels */}
         <PerformanceMonitor isEnabled={isMonitorOpen} />

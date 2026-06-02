@@ -82,14 +82,7 @@ export default function CenterReticle({ isListening, isProcessing, isDiagnostics
              style={{ backgroundColor: statusColor }} />
       </div>
 
-      {/* Outer framing brackets */}
-      <div className="absolute w-[360px] h-[360px] pointer-events-none flex justify-between items-center">
-        {/* Rotating corner ticks */}
-        <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-primary-fixed-dim/20" />
-        <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-primary-fixed-dim/20" />
-        <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-primary-fixed-dim/20" />
-        <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-primary-fixed-dim/20" />
-      </div>
+
     </div>
   );
 }
